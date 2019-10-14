@@ -239,6 +239,36 @@ function register(app) {
 
     apiRoute(GET, '/api/similar_notes/:noteId', similarNotesRoute.getSimilarNotes);
 
+    const plantuml = require('node-plantuml');
+
+    plantuml.useNailgun(); // Activate the usage of Nailgun
+
+    const uml = `@startuml
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+
+Alice -> Bob: Another authentication Request
+Alice <-- Bob: Another authentication Response
+@enduml`;
+
+    app.get('/png', function(req, res) {
+        res.set('Content-Type', 'image/png');
+
+        var gen = plantuml.generate(uml,{format: 'png'});
+
+        gen.out.pipe(res);
+    });
+
+    app.get('/svg', function(req, res) {
+        res.set('Content-Type', 'image/svg+xml');
+
+        var decode = plantuml.decode(encoded);
+        var gen = plantuml.generate({format: 'svg'});
+
+        decode.out.pipe(gen.in);
+        gen.out.pipe(res);
+    });
+
     app.use('', router);
 }
 
